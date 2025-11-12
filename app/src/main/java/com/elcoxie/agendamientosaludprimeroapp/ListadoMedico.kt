@@ -49,7 +49,7 @@ fun MedicosListScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Listado de Médicos 👨‍⚕️👩‍⚕️",
+                text = "Listado de Médicos",
                 color = Mora2,
                 fontWeight = FontWeight.ExtraBold,
                 style = MaterialTheme.typography.titleLarge,

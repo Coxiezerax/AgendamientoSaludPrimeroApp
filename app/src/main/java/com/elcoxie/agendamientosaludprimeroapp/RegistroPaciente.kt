@@ -31,7 +31,7 @@ fun RegistroPacientesApp(
     navController: NavController,
     vm: PacienteViewModel = viewModel()
 ) {
-    // declaramos variables
+    // Variables
     var nombre by remember { mutableStateOf(TextFieldValue("")) }
     var appaterno by remember { mutableStateOf(TextFieldValue("")) }
     var apmaterno by remember { mutableStateOf(TextFieldValue("")) }
@@ -40,17 +40,23 @@ fun RegistroPacientesApp(
     var telefono by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
 
-    // estados
-    var rutError by remember { mutableStateOf(false) }
+    // estados de error -> para validaciones que sean obligatorios esos campos
     var nombreError by remember { mutableStateOf(false) }
-
+    var rutError by remember { mutableStateOf(false) }
+    var edadError by remember { mutableStateOf(false) }
+    var telefonoError by remember { mutableStateOf(false) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    // animacion boton
+    // animaciones del boton
     val buttonColor by animateColorAsState(
-        targetValue = if (nombre.text.isNotBlank() && rut.text.isNotBlank()) Mora2 else Color.Gray,
+        targetValue = if (
+            nombre.text.isNotBlank() &&
+            rut.text.isNotBlank() &&
+            edad.text.isNotBlank() &&
+            telefono.text.isNotBlank()
+        ) Mora2 else Color.Gray,
         animationSpec = tween(500)
     )
 
@@ -70,14 +76,18 @@ fun RegistroPacientesApp(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Mora2)
             )
         },
+        // logica de validaciones
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    // Validaciones
                     nombreError = nombre.text.isBlank()
                     rutError = rut.text.isBlank()
-
-                    if (!nombreError && !rutError) {
+                    edadError = edad.text.isBlank()
+                    telefonoError = telefono.text.isBlank()
+                    // para campo obligatorio
+                    if (!nombreError && !rutError && !edadError && !telefonoError) {
                         vm.registrarPaciente(
                             nombre.text,
                             appaterno.text,
@@ -88,7 +98,7 @@ fun RegistroPacientesApp(
                             email.text
                         )
 
-                        //
+                        // campos limpios
                         nombre = TextFieldValue("")
                         appaterno = TextFieldValue("")
                         apmaterno = TextFieldValue("")
@@ -102,7 +112,7 @@ fun RegistroPacientesApp(
                         }
                     } else {
                         scope.launch {
-                            snackbarHostState.showSnackbar("Completa los campos faltantes")
+                            snackbarHostState.showSnackbar("Porfavor completa todos los campos que son obligatorios")
                         }
                     }
                 },
@@ -120,13 +130,12 @@ fun RegistroPacientesApp(
                 .background(Esmeralda)
                 .padding(16.dp)
         ) {
-            //
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn(animationSpec = tween(800)) + slideInVertically(initialOffsetY = { it / 3 })
             ) {
                 Text(
-                    text = "Registro de Pacientes ",
+                    text = "Registro de Pacientes",
                     fontSize = 22.sp,
                     color = Mora2,
                     fontWeight = FontWeight.ExtraBold,
@@ -136,12 +145,15 @@ fun RegistroPacientesApp(
                 )
             }
 
-            // campos visuales
+            // Nombre
             OutlinedTextField(
                 value = nombre,
                 onValueChange = {
-                    nombre = it
-                    nombreError = it.text.isBlank()
+                    // esta funcion nos permite que solo se acepten espacios y letras dentro de campo nombre appaterno apmaterno
+                    if (it.text.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*$"))) {
+                        nombre = it
+                        nombreError = it.text.isBlank()
+                    }
                 },
                 label = { Text("Nombre") },
                 isError = nombreError,
@@ -154,7 +166,9 @@ fun RegistroPacientesApp(
 
             OutlinedTextField(
                 value = appaterno,
-                onValueChange = { appaterno = it },
+                onValueChange = {
+                    if (it.text.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*$"))) appaterno = it
+                },
                 label = { Text("Apellido Paterno") },
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -162,7 +176,9 @@ fun RegistroPacientesApp(
 
             OutlinedTextField(
                 value = apmaterno,
-                onValueChange = { apmaterno = it },
+                onValueChange = {
+                    if (it.text.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]*$"))) apmaterno = it
+                },
                 label = { Text("Apellido Materno") },
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -183,18 +199,34 @@ fun RegistroPacientesApp(
                 modifier = Modifier.fillMaxWidth()
             )
 
+
             OutlinedTextField(
                 value = edad,
-                onValueChange = { edad = it },
+                onValueChange = {
+                    if (it.text.matches(Regex("^[0-9]{0,3}$"))) edad = it
+                    edadError = edad.text.isBlank()
+                },
                 label = { Text("Edad") },
+                isError = edadError,
+                supportingText = {
+                    if (edadError) Text("Campo requerido", color = MaterialTheme.colorScheme.error)
+                },
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
             )
 
+
             OutlinedTextField(
                 value = telefono,
-                onValueChange = { telefono = it },
+                onValueChange = {
+                    if (it.text.matches(Regex("^[0-9]{0,9}$"))) telefono = it
+                    telefonoError = telefono.text.isBlank()
+                },
                 label = { Text("Teléfono") },
+                isError = telefonoError,
+                supportingText = {
+                    if (telefonoError) Text("Campo requerido", color = MaterialTheme.colorScheme.error)
+                },
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -209,3 +241,4 @@ fun RegistroPacientesApp(
         }
     }
 }
+

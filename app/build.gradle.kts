@@ -48,7 +48,7 @@ android {
 
     dependencies {
 
-        // 🔹 Core Android + Jetpack Compose
+        // jetpack compose
         implementation(libs.androidx.core.ktx)
         implementation(libs.androidx.lifecycle.runtime.ktx)
         implementation(libs.androidx.activity.compose)
@@ -63,22 +63,22 @@ android {
 // Material Components (provee Theme.Material3.* en XML)
         implementation("com.google.android.material:material:1.12.0")
 
-// Compose (asegura que el tema Compose y Navigation estén)
+// compose
         implementation("androidx.activity:activity-compose:1.9.3")
         implementation(platform("androidx.compose:compose-bom:2025.01.00"))
         implementation("androidx.compose.ui:ui")
         implementation("androidx.compose.ui:ui-tooling-preview")
         implementation("androidx.compose.material3:material3")
         implementation("androidx.navigation:navigation-compose:2.8.4")
-        // 🧠 ViewModel Compose
+
         implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
 
-        // 🗃️ ROOM (persistencia local SQLite)
+        // sql room
         implementation("androidx.room:room-runtime:2.6.1")
         implementation("androidx.room:room-ktx:2.6.1")
         kapt("androidx.room:room-compiler:2.6.1")
 
-        // 🧪 Testing
+
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)
         androidTestImplementation(libs.androidx.espresso.core)
